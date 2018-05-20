@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ImageCut_OpenCV</string>
+    <string name="draw_rect_info">Draw a rect to select area you want cut</string>
+    <string name="do_grabCut_info">Draw some pixel you do not want and Click "GrabCut" to handle it</string>
+    <string name="next_step">下一步 </string>
+    <string name="pre_step">上一步</string>
+    <string name="grabCut">GrabCut</string>
+    <string name="canny">Canny</string>
+    <string name="save">保存</string>
+    <string name="share">分享</string>
+    <string name="finish">完成</string>
+</resources>
