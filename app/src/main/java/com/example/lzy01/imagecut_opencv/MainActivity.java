@@ -102,9 +102,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_canny:
                 ToCanny();
+                finish();
                 break;
             case R.id.btn_GrabCut:
                 ToGrabCut();
+                finish();
                 break;
             case R.id.btn_back:
                 backFirstView();
@@ -122,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         startActivityForResult(intent, PHOTO_REQUEST);//Photo_Request是自己定义的一个请求码
-        System.out.println("PHOTO --------"+PICTURE_FILE.toString());
+        Log.d(TAG, "ToCamera: call camera with file path");
     }
 
     private void ToGallery() {
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Intent cannyIntent=new Intent(MainActivity.this,ActivityCanny.class);
         cannyIntent.putExtra("srcImage",Bitmap2Bytes(srcBitmap));
         startActivity(cannyIntent);
+        finish();
         Log.d(TAG, "cutImage: canny");
     }
 
@@ -145,6 +148,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         grabCutIntent.putExtra("srcImage",Bitmap2Bytes(srcBitmap));
         startActivity(grabCutIntent);
         Log.d(TAG, "cutImage: grabcut");
+        finish();
     }
 
     private void backFirstView() {
@@ -202,29 +206,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private Bitmap loadBitmap(String imgpath) {
         BitmapFactory.Options options = new BitmapFactory.Options();
-        Bitmap bm = null;
 
         // 减少内存使用量，有效防止OOM
         {
             options.inJustDecodeBounds = true;
-            bm = BitmapFactory.decodeFile(imgpath, options);
-
-            // 屏幕宽
-            int Wight = getWindowManager().getDefaultDisplay().getWidth();
-
-            // 缩放比
-            int ratio = options.outWidth / Wight;
-            Log.e("xiangji", "options.outWidth="+options.outWidth);
-            Log.e("xiangji", "rWight="+Wight);
-            if (ratio <= 0){
-                ratio = 1;
-            }
 
             //InSampleSize这个参数可以调节你在decode原图时所需要的内存，有点像采样率，会丢掉一些像素，值是大于1的数，为2的幂时更利于运算。
             //举个例子：当 inSampleSize == 4 时会返回一个尺寸(长和宽)是原始尺寸1/4，像素是原来1/16的图片，由此来减少内存使用
+            options.inSampleSize = 1;//手动控制此数值,决定显示时照片的大小
 
-            options.inSampleSize = ratio;//由动态的生成此数值
-            //options.inSampleSize = 1;//手动控制此数值,决定显示时照片的大小
             options.inJustDecodeBounds = false;
         }
 

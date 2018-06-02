@@ -26,7 +26,7 @@ public class ActivityProcessEnd extends AppCompatActivity implements View.OnClic
     private Button btn_back;
     private Bitmap srcBitmap;
     private  File SAVE_FILE;
-
+    private static final String TAG = "ActivityProcessEnd";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +59,7 @@ public class ActivityProcessEnd extends AppCompatActivity implements View.OnClic
             case R.id.btn_backFirst:
                 Intent intent=new Intent(ActivityProcessEnd.this,MainActivity.class);
                 startActivity(intent);
+                finish();
                 break;
         }
     }

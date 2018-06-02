@@ -20,6 +20,7 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
     private Bitmap srcBitmap;
     private Bitmap cannyBitmap;
     private boolean isCannyDone;
+    private static final String TAG = "ActivityCanny";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
         byte[] srcByte=intent.getByteArrayExtra("srcImage");
         srcBitmap= BitmapFactory.decodeByteArray(srcByte, 0, srcByte.length).copy(Bitmap.Config.ARGB_8888, true);
         showImage.setImageBitmap(srcBitmap);
+        cannyBitmap=Bitmap.createBitmap(srcBitmap);
     }
 
     private void setBtn_canny() {
@@ -55,15 +57,15 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
                 if(isCannyDone){
                     Toast.makeText(getApplicationContext(), "canny have done", Toast.LENGTH_SHORT).show();
                     Intent intent=new Intent(ActivityCanny.this,ActivityProcessEnd.class);
-                    intent.putExtra("image",MainActivity.Bitmap2Bytes(srcBitmap));
-//                    intent.putExtra("CannyImage",MainActivity.Bitmap2Bytes(cannyBitmap));
+                    intent.putExtra("image",MainActivity.Bitmap2Bytes(cannyBitmap));
                     startActivity(intent);
+                    finish();
                 }else{
                     Toast.makeText(getApplicationContext(), "canny is running", Toast.LENGTH_SHORT).show();
-//--------------------cannyBitmap=DoCanny(srcBitmap);
+                    DoCanny(cannyBitmap);
                     isCannyDone=true;
                     setBtn_canny();
-//--------------------showImage.setImageBitmap(cannyBitmap);
+                    showImage.setImageBitmap(cannyBitmap);
                 }
                 break;
             case R.id.btn_cannyPre:
@@ -73,6 +75,8 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
                     isCannyDone=false;
                     setBtn_canny();
                 }else {
+                    Intent intent =new Intent(ActivityCanny.this,MainActivity.class);
+                    startActivity(intent);
                     Toast.makeText(getApplicationContext(), "canny undo", Toast.LENGTH_SHORT).show();
                     finish();
                 }

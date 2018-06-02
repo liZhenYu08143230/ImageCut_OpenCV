@@ -1,8 +1,6 @@
 package com.example.lzy01.imagecut_opencv;
 
-import android.graphics.Bitmap;
-
 public class JniFunction {
-    public static native Bitmap DoCanny(Bitmap srcBitmap);
-    public static native Bitmap DoGrabCut(Bitmap srcBitmap,Bitmap Mask);
+    public static native void DoCanny(Object srcBitmap);
+    public static native void DoGrabCut(Object srcBitmap,int [] Mask);
 }
