@@ -72,6 +72,7 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
                 if(isCannyDone){
                     Toast.makeText(getApplicationContext(), "Retry canny", Toast.LENGTH_SHORT).show();
                     showImage.setImageBitmap(srcBitmap);
+                    cannyBitmap=srcBitmap.copy(Bitmap.Config.ARGB_8888, true);
                     isCannyDone=false;
                     setBtn_canny();
                 }else {

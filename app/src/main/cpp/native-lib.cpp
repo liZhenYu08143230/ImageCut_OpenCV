@@ -45,7 +45,7 @@ Java_com_example_lzy01_imagecut_1opencv_JniFunction_DoGrabCut(JNIEnv *env, jclas
     CV_Assert(pixelsrc);
 
     Rect rect;
-    Mat bgModel, fgModel,result;
+    Mat bgModel, fgModel,result0,result1,result;
 
     Mat srcC4(infosrc.height, infosrc.width, CV_8UC4, pixelsrc);
     Mat src;
@@ -53,15 +53,18 @@ Java_com_example_lzy01_imagecut_1opencv_JniFunction_DoGrabCut(JNIEnv *env, jclas
     Mat mask(infosrc.height, infosrc.width,CV_8UC1);
     for(int x=0;x<infosrc.height;x++){
         for(int y=0;y<infosrc.width;y++){
-            mask.at<uchar>(x,y)=receivedIntArrary[x*infosrc.width+y];
+            mask.at<uchar>(x,y)=receivedIntArrary[y*infosrc.height+x];
         }
     }
     env->ReleaseIntArrayElements(Mask, receivedIntArrary, 0);
 
-    grabCut(src,mask,rect, fgModel, bgModel,2,GC_INIT_WITH_MASK);
-    compare(mask, GC_PR_FGD, mask, CMP_EQ);
+
+    grabCut(src,mask,rect, fgModel, bgModel,4,GC_INIT_WITH_MASK);
+    compare(mask, GC_PR_FGD, result0, CMP_EQ);
+    compare(mask, GC_FGD, result1, CMP_EQ);
+    compare(result0, result1, result, CMP_NE);
     Mat foreground(src.size(),CV_8UC3, Scalar::all(255));
-    src.copyTo(foreground,mask);
+    src.copyTo(foreground,result);
 
     cvtColor(foreground,srcC4,COLOR_BGR2BGRA);
     AndroidBitmap_unlockPixels(env, srcBitmap);

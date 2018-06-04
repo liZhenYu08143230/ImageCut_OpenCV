@@ -31,6 +31,7 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
     private final int GC_FGD=1;
     private final int GC_PR_BGD=2;
     private final int GC_PR_FGD=3;
+    private final int MOVE_RECT_DIS=25;
 
     private int []Mask;
     private Button btn_grabCut;
@@ -44,6 +45,7 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
 
     private Bitmap srcBitmap;
     private Bitmap drawBitmap;
+    private Bitmap grabCutBitmap;
 
     private boolean drawRect;
     private boolean haveRect;
@@ -108,7 +110,7 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
         byte[] srcByte = intent.getByteArrayExtra("srcImage");
         srcBitmap = BitmapFactory.decodeByteArray(srcByte, 0, srcByte.length).copy(Bitmap.Config.ARGB_8888, true);
         showImage.setImageBitmap(srcBitmap);
-        drawBitmap = Bitmap.createBitmap(srcBitmap);
+        grabCutBitmap = Bitmap.createBitmap(srcBitmap);
 
         Mask=new int [srcBitmap.getWidth()*srcBitmap.getHeight()];
     }
@@ -128,6 +130,7 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
             layout.setMargins(8, 0, 8, 0);
             showImage.setLayoutParams(layout);
         }else if(!haveRect){
+            btn_grabCut.setText(R.string.grabCut);
             btn_grabCut.setEnabled(false);
             info.setText(R.string.draw_rect_info);
             info.setVisibility(View.VISIBLE);
@@ -148,18 +151,18 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
                     DoMask();
 
                     Log.d(TAG, "onClick: start grabcut with mask");
-                    DoGrabCut(srcBitmap, Mask);
+                    DoGrabCut(grabCutBitmap, Mask);
 
                     Log.d(TAG, "onClick: grabcut is done");
 
                     isGrabCut = true;
-                    showImage.setImageBitmap(srcBitmap);
+                    showImage.setImageBitmap(grabCutBitmap);
                     ChangeView();
                 } else if (!haveRect) {
                     Toast.makeText(getApplicationContext(), "please draw a rect", Toast.LENGTH_SHORT).show();
                 } else if (isGrabCut) {
                     Intent intent = new Intent(ActivityGrabCut.this, ActivityProcessEnd.class);
-                    intent.putExtra("image", MainActivity.Bitmap2Bytes(srcBitmap));
+                    intent.putExtra("image", MainActivity.Bitmap2Bytes(grabCutBitmap));
                     startActivity(intent);
                     finish();
                 }
@@ -197,7 +200,10 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
                             tsubSY = abs(startY - tempY);
                             tsubEX = abs(endX - tempX);
                             tsubEY = abs(endY - tempY);
-                            if (tsubSX <= 5 || tsubSY <= 5 || tsubEX <= 5 || tsubEY <= 5) {
+                            if (tsubSX <= MOVE_RECT_DIS ||
+                                tsubSY <= MOVE_RECT_DIS ||
+                                tsubEX <= MOVE_RECT_DIS ||
+                                tsubEY <= MOVE_RECT_DIS) {
                                 isMove = true;
                                 Log.d(TAG, "onTouch: isMove == true");
                             }
@@ -326,20 +332,20 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
 
     private int RectChange ( int tsubSX, int tsubSY, int tsubEX, int tsubEY){
             int mode;
-            if (tsubSX <= 5) {
-                if (tsubSY <= 5) {
+            if (tsubSX <= MOVE_RECT_DIS) {
+                if (tsubSY <= MOVE_RECT_DIS) {
                     mode = 1;
-                } else if (tsubEY <= 5) {
+                } else if (tsubEY <= MOVE_RECT_DIS) {
                     mode = 7;
                 } else if (tsubSY + tsubEY == abs(startY - endY)) {
                     mode = 4;
                 } else {
                     mode = 0;
                 }
-            } else if (tsubEX <= 5) {
-                if (tsubSY <= 5) {
+            } else if (tsubEX <= MOVE_RECT_DIS) {
+                if (tsubSY <= MOVE_RECT_DIS) {
                     mode = 3;
-                } else if (tsubEY <= 5) {
+                } else if (tsubEY <= MOVE_RECT_DIS) {
                     mode = 9;
                 } else if (tsubSY + tsubEY == abs(startY - endY)) {
                     mode = 6;
@@ -347,9 +353,9 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
                     mode = 0;
                 }
             } else if (tsubEX + tsubSX == abs(startX - endX)) {
-                if (tsubSY <= 5) {
+                if (tsubSY <= MOVE_RECT_DIS) {
                     mode = 2;
-                } else if (tsubEY <= 5) {
+                } else if (tsubEY <= MOVE_RECT_DIS) {
                     mode = 8;
                 } else if (tsubSY + tsubEY == abs(startY - endY)) {
                     mode = 5;
@@ -386,19 +392,21 @@ public class ActivityGrabCut extends AppCompatActivity implements View.OnClickLi
         int y0=startY>endY?endY:startY;
         int x2=startX<endY?endX:startX;
         int y2=startY<endY?endY:startY;
-        for(int x=0;x<drawBitmap.getWidth();x++){
-            for (int y=0;y<drawBitmap.getHeight();y++){
+        int height=drawBitmap.getHeight();
+        int width=drawBitmap.getWidth();
+        for(int x=0;x<width;x++){
+            for (int y=0;y<height;y++){
                 if(x>=x0&&x<=x2&&y>=y0&&y<=y2){
                     int pixel=drawBitmap.getPixel(x,y);
                     if(pixel==Color.BLUE){
-                        Mask[x*srcBitmap.getWidth()+y]=GC_BGD;
+                        Mask[x*height+y]=GC_BGD;
                     }else if(pixel==Color.RED){
-                        Mask[x*srcBitmap.getWidth()+y]=GC_FGD;
+                        Mask[x*height+y]=GC_FGD;
                     }else {
-                        Mask[x*srcBitmap.getWidth()+y]=GC_PR_FGD;
+                        Mask[x*height+y]=GC_PR_FGD;
                     }
                 }else{
-                    Mask[x*srcBitmap.getWidth()+y]=GC_BGD;
+                    Mask[x*height+y]=GC_BGD;
                 }
             }
         }
