@@ -73,7 +73,6 @@ public class ActivityProcessEnd extends AppCompatActivity implements View.OnClic
                 SAVE_FILE.getParentFile().mkdirs();
             }
             Bitmap obmp = srcBitmap;
-            FileOutputStream fos;
             try{
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(SAVE_FILE));
                 obmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
@@ -84,7 +83,7 @@ public class ActivityProcessEnd extends AppCompatActivity implements View.OnClic
                 e.printStackTrace();
             }
         }
-        Toast.makeText(getApplicationContext(), "保存成功", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "保存成功", Toast.LENGTH_SHORT).show();
     }
     private void shareImg(String dlgTitle, String subject, String content, Uri uri) {
         if (uri == null) {

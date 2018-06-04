@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ImageCut_lzy</string>
+    <string name="app_name">OpenCVgrabcut_ImageCut</string>
     <string name="draw_rect_info">Draw a rect to select area you want cut</string>
     <string name="do_grabCut_info">Draw some pixel you do not want and Click "GrabCut" to handle it</string>
     <string name="next_step">下一步 </string>

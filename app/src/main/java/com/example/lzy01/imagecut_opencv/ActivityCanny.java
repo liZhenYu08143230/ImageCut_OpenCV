@@ -62,7 +62,12 @@ public class ActivityCanny extends AppCompatActivity implements View.OnClickList
                     finish();
                 }else{
                     Toast.makeText(getApplicationContext(), "canny is running", Toast.LENGTH_SHORT).show();
-                    DoCanny(cannyBitmap);
+//                     DoCanny(cannyBitmap);
+                    double sigam =0.6;
+                    int guiYiMode =0;
+                    int dimension=1;
+                    Canny myCanny=new Canny();
+                    cannyBitmap=myCanny.CannyPicture(sigam,guiYiMode,dimension,cannyBitmap);
                     isCannyDone=true;
                     setBtn_canny();
                     showImage.setImageBitmap(cannyBitmap);
